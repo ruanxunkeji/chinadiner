@@ -1,0 +1,59 @@
+name: Build Windows App
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-win:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build service (eatin)
+        run: npm run build:eatin
+
+      - name: Install eatin-app dependencies
+        working-directory: eatin-app
+        run: npm install
+
+      - name: Build Windows installer
+        working-directory: eatin-app
+        run: npm run build:win
+        env:
+          WIN_CSC_LINK: ${{ github.workspace }}\eatin-app\gooddiner.pfx
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: GoodDiner-Windows-Setup
+          path: eatin-app/dist/*.exe
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_PAT }}
+        shell: bash
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --repo wangsanity/gooddiner-releases \
+            --title "${{ github.ref_name }}" \
+            --notes "Windows installer" || true
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          for f in eatin-app/dist/*.exe; do
+            EXT="${f##*.}"
+            BASE="${f%.*}"
+            cp "$f" "${BASE}-${TIMESTAMP}.${EXT}"
+          done
+          gh release upload ${{ github.ref_name }} eatin-app/dist/*-${TIMESTAMP}.exe \
+            --repo wangsanity/gooddiner-releases

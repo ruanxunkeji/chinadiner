@@ -1,0 +1,44 @@
+{
+  "name": "gooddiner-app",
+  "version": "1.0.0",
+  "description": "Good Diner",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win"
+  },
+  "build": {
+    "appId": "com.gooddiner.takeaway.app",
+    "productName": "Good Diner Takeaway",
+    "mac": {
+      "icon": "images/logo.png",
+      "target": "dmg"
+    },
+    "win": {
+      "icon": "images/logo.png",
+      "target": "portable"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "images/logo.ico",
+      "uninstallerIcon": "images/logo.ico"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "images/**",
+      "config.json",
+      "printer-test.html"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^40.8.0",
+    "electron-builder": "^25.1.8"
+  }
+}

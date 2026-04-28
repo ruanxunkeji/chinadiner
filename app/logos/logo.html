@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Good Diner Logo</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #1a1a1a;
+      font-family: 'Georgia', serif;
+      gap: 24px;
+    }
+
+    #logo-svg {
+      width: 1024px;
+      height: 1024px;
+      display: block;
+    }
+
+    button {
+      padding: 12px 32px;
+      background: #c8922a;
+      color: #1a1a1a;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 2px;
+    }
+
+    button:hover {
+      background: #e0a83a;
+    }
+  </style>
+</head>
+<body>
+
+  <svg id="logo-svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+    <!-- Outer circle -->
+    <circle cx="512" cy="512" r="470" fill="#5c3a1e" stroke="#c8922a" stroke-width="18"/>
+    <!-- Inner decorative ring -->
+    <circle cx="512" cy="512" r="430" fill="none" stroke="#c8922a" stroke-width="5" stroke-dasharray="18 12"/>
+
+    <!-- Fork on left -->
+    <g transform="translate(252, 300)" stroke="#c8922a" stroke-width="9" stroke-linecap="round" fill="none">
+      <line x1="0" y1="0" x2="0" y2="424"/>
+      <line x1="-32" y1="0" x2="-32" y2="130"/>
+      <line x1="32" y1="0" x2="32" y2="130"/>
+      <path d="M-32,130 Q0,175 32,130"/>
+    </g>
+
+    <!-- Knife on right -->
+    <g transform="translate(772, 300)" stroke="#c8922a" stroke-width="9" stroke-linecap="round">
+      <line x1="0" y1="0" x2="0" y2="424" fill="none"/>
+      <path d="M0,0 Q48,65 0,160" fill="#c8922a" stroke="#c8922a" stroke-width="3"/>
+    </g>
+
+    <!-- Top arc text: GOOD -->
+    <path id="topArc" d="M 100,512 A 415,415 0 0,1 924,512" fill="none"/>
+    <text font-family="Georgia, serif" font-size="72" font-weight="bold" fill="#c8922a" letter-spacing="40">
+      <textPath href="#topArc" startOffset="18%">G O O D</textPath>
+    </text>
+
+    <!-- Center ornament -->
+    <text x="512" y="470" text-anchor="middle" font-size="52" fill="#c8922a">✦</text>
+
+    <!-- Main text: DINER -->
+    <text x="512" y="600" text-anchor="middle"
+          font-family="Georgia, serif"
+          font-size="156"
+          font-weight="bold"
+          fill="#f5f0e8"
+          letter-spacing="18">DINER</text>
+
+    <!-- Tagline -->
+    <text x="512" y="690" text-anchor="middle"
+          font-family="Georgia, serif"
+          font-size="42"
+          fill="#c8922a"
+          letter-spacing="14">EST. 2026</text>
+
+    <!-- Bottom decorative line -->
+    <line x1="320" y1="730" x2="704" y2="730" stroke="#c8922a" stroke-width="3"/>
+
+    <!-- Bottom arc text -->
+    <path id="bottomArc" d="M 120,570 A 415,415 0 0,0 904,570" fill="none"/>
+    <text font-family="Georgia, serif" font-size="36" fill="#c8922a" letter-spacing="14">
+      <textPath href="#bottomArc" startOffset="12%">GREAT FOOD · GREAT TIMES</textPath>
+    </text>
+  </svg>
+
+  <button onclick="savePNG()">Save as PNG</button>
+
+  <script>
+    function savePNG() {
+      const svg = document.getElementById('logo-svg');
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svg);
+      const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1024;
+        canvas.height = 1024;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, 1024, 1024);
+        URL.revokeObjectURL(url);
+
+        canvas.toBlob(blob => {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'good-diner-logo.png';
+          a.click();
+        }, 'image/png');
+      };
+      img.src = url;
+    }
+  </script>
+
+</body>
+</html>

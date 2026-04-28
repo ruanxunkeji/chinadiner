@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Diner Logo</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #cccccc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Crect width='10' height='10' fill='%23fff'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23fff'/%3E%3C/svg%3E");
+            font-family: 'Georgia', serif;
+            gap: 24px;
+        }
+
+        #logo-svg {
+            width: 512px;
+            height: 512px;
+            display: block;
+        }
+
+        button {
+            padding: 12px 32px;
+            background: #c0392b;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            background: #a93226;
+        }
+    </style>
+</head>
+
+<body>
+    <svg id="logo-svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+        <!-- Transparent background (no rect) -->
+        <!-- Circle -->
+        <circle cx="512" cy="512" r="490" fill="#ffffff" stroke="#1a1a1a" stroke-width="14" />
+        <!-- "Good" -->
+        <text x="512" y="468" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="164"
+            font-weight="normal" fill="#c0392b" letter-spacing="10">Good</text>
+        <!-- Divider -->
+        <line x1="160" y1="512" x2="864" y2="512" stroke="#1a1a1a" stroke-width="3" />
+        <!-- "Diner" -->
+        <text x="512" y="720" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="210"
+            font-weight="bold" fill="#1a1a1a" letter-spacing="4">Diner</text>
+    </svg>
+    <button onclick="savePNG()">Save as PNG</button>
+    <script>
+        function savePNG() {
+            const svg = document.getElementById('logo-svg');
+            const serializer = new XMLSerializer();
+            const svgStr = serializer.serializeToString(svg);
+            const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 512;
+                canvas.height = 512;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, 512, 512);
+                URL.revokeObjectURL(url);
+                canvas.toBlob(blob => {
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'good-diner-logo.png';
+                    a.click();
+                }, 'image/png');
+            };
+            img.src = url;
+        }
+    </script>
+</body>
+
+</html>

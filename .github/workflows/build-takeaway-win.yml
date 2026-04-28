@@ -1,0 +1,54 @@
+name: Build Takeaway Windows App
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-win:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install app dependencies
+        working-directory: app
+        run: npm install
+
+      - name: Build Windows installer
+        working-directory: app
+        run: npm run build:win
+        env:
+          WIN_CSC_LINK: ${{ github.workspace }}\app\gooddiner.pfx
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.PFX_PASSWORD }}
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: GoodDiner-Windows-Setup
+          path: app/dist/*.exe
+          retention-days: 30
+
+      - name: Publish GitHub Release
+        shell: bash
+        run: |
+          gh release create ${{ github.ref_name }} \
+            --repo ruanxunkeji/chinadiner \
+            --title "${{ github.ref_name }}" \
+            --notes "Windows installer" || true
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          for f in app/dist/*.exe; do
+            EXT="${f##*.}"
+            BASE="${f%.*}"
+            cp "$f" "${BASE}-${TIMESTAMP}.${EXT}"
+          done
+          gh release upload ${{ github.ref_name }} app/dist/*-${TIMESTAMP}.exe \
+            --repo ruanxunkeji/chinadiner
