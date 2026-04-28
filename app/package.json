@@ -18,7 +18,7 @@
     },
     "win": {
       "icon": "images/logo.png",
-      "target": "portable"
+      "target": "nsis"
     },
     "nsis": {
       "oneClick": false,
